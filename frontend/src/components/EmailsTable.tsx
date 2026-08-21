@@ -8,6 +8,7 @@ import { motion } from "framer-motion";
 
 type Props = {
   type: "scheduled" | "sent";
+  onCountUpdate?: (count: number) => void;
 };
 
 function StatusBadge({ status }: { status: string }) {
@@ -39,7 +40,7 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-export default function EmailsTable({ type }: Props) {
+export default function EmailsTable({ type, onCountUpdate }: Props) {
   const { data: session } = useSession();
   const [emails, setEmails] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +76,12 @@ export default function EmailsTable({ type }: Props) {
         prevEmailsJsonRef.current = jsonStr;
         setEmails(filtered);
       }
+      
+      // Always update count even if json string hasn't changed structure
+      if (onCountUpdate) {
+        onCountUpdate(filtered.length);
+      }
+      
       setError("");
     } catch (err) {
       console.error(err);

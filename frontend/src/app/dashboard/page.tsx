@@ -17,6 +17,7 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<"scheduled" | "sent">("scheduled");
   const [isComposeOpen, setIsComposeOpen] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [counts, setCounts] = useState({ scheduled: 0, sent: 0 });
 
   useEffect(() => {
     if (status === "unauthenticated") {
@@ -121,13 +122,17 @@ export default function Dashboard() {
             <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-accent/10 border border-accent/20">
               <div className="w-2 h-2 rounded-full bg-accent animate-pulse" />
               <span className="text-xs font-semibold text-accent tracking-wide uppercase">
-                {activeTab === "scheduled" ? "Processing Queue" : "Completed"}
+                {activeTab === "scheduled" ? `Processing Queue (${counts.scheduled})` : `Completed (${counts.sent})`}
               </span>
             </div>
           </div>
           
           <div className="w-full relative z-0">
-            <EmailsTable key={`${activeTab}-${refreshKey}`} type={activeTab} />
+            <EmailsTable 
+              key={`${activeTab}-${refreshKey}`} 
+              type={activeTab} 
+              onCountUpdate={(count) => setCounts(prev => ({ ...prev, [activeTab]: count }))}
+            />
           </div>
           </motion.div>
       </main>
