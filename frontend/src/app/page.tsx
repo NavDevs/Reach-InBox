@@ -4,7 +4,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Sparkles, Mail, Zap, ArrowRight, MousePointerClick } from "lucide-react";
+import { Mail, Zap, ArrowRight, MousePointerClick } from "lucide-react";
 
 // Spotlight Card Component
 const SpotlightCard = ({ children, className = "" }: { children: React.ReactNode, className?: string }) => {
@@ -97,15 +97,7 @@ export default function Home() {
         style={{ opacity: heroOpacity, scale: heroScale, y: heroY }}
         className="w-full flex flex-col items-center text-center max-w-4xl z-10"
       >
-        <motion.div 
-          initial={{ opacity: 1, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] as const }}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-default bg-surface backdrop-blur-md mb-8"
-        >
-          <Sparkles className="w-4 h-4 text-accent-bright" />
-          <span className="text-xs font-mono tracking-widest text-foreground-muted">NEXT-GEN AUTOMATION</span>
-        </motion.div>
+
         
         <motion.h1 
           initial={{ opacity: 1, y: 30 }}
