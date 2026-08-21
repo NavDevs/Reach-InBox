@@ -63,10 +63,11 @@ export default function Dashboard() {
                   toast.error("Error wiping data.");
                 }
               }}
-              className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-lg font-medium transition-all duration-300 active:scale-[0.98]"
+              className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-red-500/5 hover:bg-red-500/10 text-red-400 border border-red-500/20 hover:border-red-500/40 rounded-lg font-medium shadow-[0_2px_12px_rgba(239,68,68,0.05),inset_0_1px_0_0_rgba(255,255,255,0.02)] hover:shadow-[0_4px_16px_rgba(239,68,68,0.15),inset_0_1px_0_0_rgba(255,255,255,0.05)] transition-all duration-300 active:scale-[0.98] overflow-hidden"
             >
-              <Trash2 className="w-4 h-4" />
-              <span>Wipe Data</span>
+              <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-red-500/10 to-transparent skew-x-[-20deg]" />
+              <Trash2 className="w-4 h-4 relative z-10 transition-transform group-hover:scale-110" />
+              <span className="relative z-10">Wipe Data</span>
             </button>
             
             <button 
