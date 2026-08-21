@@ -6,8 +6,9 @@ import Header from "@/components/Header";
 import EmailsTable from "@/components/EmailsTable";
 import ComposeModal from "@/components/ComposeModal";
 import SandboxBanner from "@/components/SandboxBanner";
-import { PenSquare, Send, Clock } from "lucide-react";
+import { PenSquare, Send, Clock, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -43,14 +44,39 @@ export default function Dashboard() {
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight text-foreground mb-2">Campaigns</h1>
             <p className="text-foreground-muted">Manage your email sequences and monitor delivery.</p>
           </div>
-          <button 
-            onClick={() => setIsComposeOpen(true)}
-            className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white rounded-lg font-medium shadow-button-primary hover:bg-accent-bright transition-all duration-300 active:scale-[0.98] overflow-hidden"
-          >
-            <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg]" />
-            <PenSquare className="w-4 h-4 relative z-10" />
-            <span className="relative z-10">New Sequence</span>
-          </button>
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={async () => {
+                if (!confirm("Are you sure you want to wipe all emails and queues? This will reset the database.")) return;
+                try {
+                  const { api } = await import('@/lib/api');
+                  const res = await api.delete("/api/wipe");
+                  if (res.status === 200) {
+                    toast.success("Database and queues wiped successfully! Refreshing...");
+                    setTimeout(() => window.location.reload(), 1500);
+                  } else {
+                    toast.error("Failed to wipe data.");
+                  }
+                } catch (e) {
+                  toast.error("Error wiping data.");
+                }
+              }}
+              className="flex items-center gap-2 px-6 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-500 border border-red-500/20 rounded-lg font-medium transition-all duration-300 active:scale-[0.98]"
+            >
+              <Trash2 className="w-4 h-4" />
+              <span>Wipe Data</span>
+            </button>
+            
+            <button 
+              onClick={() => setIsComposeOpen(true)}
+              className="group relative flex items-center justify-center gap-2 px-6 py-3 bg-accent text-white rounded-lg font-medium shadow-button-primary hover:bg-accent-bright transition-all duration-300 active:scale-[0.98] overflow-hidden"
+            >
+              <div className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-20deg]" />
+              <PenSquare className="w-4 h-4 relative z-10" />
+              <span className="relative z-10">New Sequence</span>
+            </button>
+          </div>
         </div>
 
           <motion.div 

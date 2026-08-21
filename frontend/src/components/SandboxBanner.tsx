@@ -98,28 +98,6 @@ export default function SandboxBanner() {
             )}
           </button>
 
-          {/* Wipe Database Button */}
-          <button
-            type="button"
-            onClick={async () => {
-              if (!confirm("Are you sure you want to wipe all emails and queues? This will reset the database.")) return;
-              try {
-                const { api } = await import('@/lib/api');
-                const res = await api.delete("/api/wipe");
-                if (res.status === 200) {
-                  toast.success("Database and queues wiped successfully! Refreshing...");
-                  setTimeout(() => window.location.reload(), 1500);
-                } else {
-                  toast.error("Failed to wipe data.");
-                }
-              } catch (e) {
-                toast.error("Error wiping data.");
-              }
-            }}
-            className="flex items-center gap-1.5 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 rounded-lg text-xs font-medium transition-all"
-          >
-            <span>Wipe Data</span>
-          </button>
 
           {/* Direct Link */}
           <a
