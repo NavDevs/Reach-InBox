@@ -216,14 +216,32 @@ app.post('/api/reset', async (_req: Request, res: Response) => {
     for (const row of result.rows) {
       await emailQueue.add('send-email', { emailId: row.id, hourlyLimit: 9999 }, { jobId: `email-${row.id}-reset-${Date.now()}` });
     }
-
-    await redis.quit();
-    res.json({ message: `Flushed ${keys.length} rate-limit keys, re-queued ${result.rows.length} emails` });
+    res.json({ message: 'Rate limits reset and queued jobs restarted.' });
   } catch (error) {
-    console.error('Error resetting:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    console.error('Reset error:', error);
+    res.status(500).json({ error: 'Failed to reset queue' });
   }
 });
+
+// Added to allow completely wiping old tests
+app.delete('/api/wipe', async (_req: Request, res: Response) => {
+  try {
+    const Redis = require('ioredis');
+    const redis = process.env.REDIS_URL
+      ? new Redis(process.env.REDIS_URL)
+      : new Redis({ host: process.env.REDIS_HOST || 'localhost', port: parseInt(process.env.REDIS_PORT || '6379', 10) });
+
+    await pool.query(`TRUNCATE TABLE emails RESTART IDENTITY CASCADE`);
+    await redis.flushall();
+    await emailQueue.obliterate({ force: true });
+    
+    res.json({ message: 'All emails and queues have been completely wiped.' });
+  } catch (error) {
+    console.error('Wipe error:', error);
+    res.status(500).json({ error: 'Failed to wipe data' });
+  }
+});
+
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
