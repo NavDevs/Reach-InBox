@@ -90,6 +90,7 @@ app.post('/api/emails/schedule', async (req: Request, res: Response) => {
 
     const dbResult = await pool.query(insertSql, queryParams);
     const parsedHourlyLimit = parseInt(hourlyLimit, 10) || parseInt(process.env.HOURLY_RATE_LIMIT || '100', 10);
+    const batchId = Date.now().toString();
 
     // 3. Batch insert into BullMQ queue via addBulk (1 single atomic Redis pipeline)
     const bulkJobs = dbResult.rows.map((row: any) => {
@@ -99,6 +100,7 @@ app.post('/api/emails/schedule', async (req: Request, res: Response) => {
         data: {
           emailId: row.id,
           hourlyLimit: parsedHourlyLimit,
+          batchId: batchId,
         },
         opts: {
           delay: jobDelay,

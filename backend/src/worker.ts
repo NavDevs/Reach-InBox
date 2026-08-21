@@ -58,13 +58,13 @@ const transporter = nodemailer.createTransport({
 const sleep = (ms: number) => new Promise<void>((resolve) => setTimeout(resolve, ms));
 
 /** Returns the Redis key for the sender's current hour bucket. */
-function rateLimitKey(sender: string): string {
+function rateLimitKey(sender: string, batchId: string = 'global'): string {
   const now   = new Date();
   const year  = now.getUTCFullYear();
   const month = String(now.getUTCMonth() + 1).padStart(2, '0');
   const day   = String(now.getUTCDate()).padStart(2, '0');
   const hour  = String(now.getUTCHours()).padStart(2, '0');
-  return `rate_limit:${sender}:${year}-${month}-${day}-${hour}`;
+  return `rate_limit:${sender}:${batchId}:${year}-${month}-${day}-${hour}`;
 }
 
 /** Returns the Unix-ms timestamp of the next UTC hour boundary (+ optional jitter). */
@@ -104,7 +104,7 @@ async function processEmailJob(job: Job): Promise<{ success: boolean; messageId?
   const to     = email.recipient as string;
 
   // ── Step 3: Redis hourly rate-limit check (Atomic) ─────
-  const bucketKey = rateLimitKey(sender);
+  const bucketKey = rateLimitKey(sender, job.data?.batchId);
   const effectiveLimit = parseInt(job.data?.hourlyLimit, 10) || HOURLY_RATE_LIMIT;
   
   // Atomically increment the counter
